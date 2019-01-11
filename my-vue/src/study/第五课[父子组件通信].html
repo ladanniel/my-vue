@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vue父子嵌套组件通信 接口为：props</title>
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="demo">
+			<my-header :list="list" ></my-header>
+		<!-- 	<my-header :list="list" <!-- :message="message" -->></my-header> -->
+			<!-- <my-header "></my-header> -->
+		</div>
+		<template id="item">
+				<div>
+					<h2>标题:{{message}}子组件</h2>
+					<ul>
+						<li v-for="item in list">{{item}}</li>
+					</ul>
+					<my-nav :list="list"></my-nav>
+					<template id="temp">
+						<ul>
+							<h2>标题:{{message}}子子组件</h2>
+							<li v-for="temp in list">{{temp}}</li>
+						</ul>
+					</template>
+				</div>
+			</template>
+			
+		<script>
+			
+			//方式二
+			var vm = new Vue({
+				el:'#demo',
+				data:{
+					list:['第一组','第二组','第三组'],
+					message:'hello'
+				},
+				components:{
+					'my-header':{
+						template:"#item",/* 如果不挂载使用默认值,*/
+						/* data:function(){
+							return{
+								message:'hello myheader'
+							};
+						}, */
+						/* props:['list'], */ /*  父组件传值给多个子组件*/
+						//验证处理
+						props:{
+							'list':{
+								type:Array,
+								/* my-header中:list="list"为空则显示默认值 */
+								/*基本类型写法 default:['1111','2222','333'] */
+								//如果不是基本类型,则需要通过工厂方式
+								default:function(){
+									return ['1111','2222','333'];
+								}
+							},
+							message:{
+								type:String,
+								default:'hello app'
+							}
+						},
+						components:{
+							'my-nav':{
+								template:'#temp',
+								props:['list']
+							}
+						}
+					}
+				}
+			})
+			</script>
+		
+	</body>
+</html>

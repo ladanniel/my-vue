@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<!-- 手机app开发适应处理 -->
+		<meta name="viewport" content="width=device-width,
+		initial-scale=1.0,user-scalable=no,maximum-scale=1.0,user-scalable=0">
+		<title>vuex组件开发：手机通讯录</title>
+	<!-- 	<h5>
+			width=device-width:屏幕自适应
+			initial=1.0：初始缩放，
+			user-scalable=no：用户缩放处理
+		1/头部组件
+		2/列表组件
+		3/弹窗组件
+		</h5> -->
+		<link rel="stylesheet" type="text/css" href="../../css/style.css"/>
+		<style>
+			#vue_content{position: relative;top: 40px;overflow: hidden;/* 移除隐藏 */}
+			#vue_content .vue_list_cell p{background: #ccc;padding-left: 10px;}
+			#vue_content .vue_list_cell ul li{height: 50px;line-height: 50px;
+			border-bottom: 1px solid #ccc;padding-left: 10px;}
+			#vue_content .list_cell_index{position: fixed;right: 10px;top: 50%;
+			font-size: 20px;}
+			#vue_content .list_cell_index li{margin: 5px 0;}
+			
+		</style> 
+		<script src="../../js/vue.js" ></script>
+	</head><!-- customer_fixed:传输boolean值不赋值默认为true-->
+	<body>
+		<div id="vue-app">
+			<vue-header customer_title="通讯录" >
+				<!-- 不是所有的标题栏都有两个按钮，需要进行分发处理 -->
+				<button @touchstart='backBtn' slot='left' type='button'>返回</button>
+				<button @touchstart='homeBtn' slot='right' type='button'>主页</button>
+			</vue-header>
+			<vue_content_list v-bind:user-datas='userDatas'></vue_content_list>
+		</div>
+		<template id="my-header">
+			<div id="header"><slot name='left'></slot>{{customer_title}}<slot name='right'></slot></div>
+		</template>
+		<template id="my-list">
+				<div id="vue_content">
+				<ul class="vue_list_cell" ref="listUsers">
+					<li v-for="item in userDatas">
+						<p>{{item.index}}</p>
+						<ul>
+							<li v-for="user in item.users">{{user.name}}</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="list_cell_index" ref="listIndex">
+					<li v-on:click='setScroll' v-for="item in userIndex">{{item}}</li>
+				</ul>
+			</div>
+		</template>
+		<script>
+			//测试数据{}表示对象,['key':'value',object]
+			var userDatas = [
+				{'index':'A','users':[
+					{'name':'a1','tel':'15908895071'},
+					{'name':'a2','tel':'15908895072'},
+					{'name':'a3','tel':'15908895073'}
+				]},
+				{'index':'B','users':[
+					{'name':'b1','tel':'15908895074'},
+					{'name':'b2','tel':'15908895075'},
+					{'name':'b3','tel':'15908895076'}
+				]},
+				{'index':'C','users':[
+					{'name':'c1','tel':'15908895077'},
+					{'name':'c2','tel':'15908895078'},
+					{'name':'c3','tel':'15908895079'}
+				]},
+				{'index':'D','users':[
+					{'name':'d1','tel':'15908895081'},
+					{'name':'d2','tel':'15908895082'},
+					{'name':'d3','tel':'15908895083'}
+				]},
+				{'index':'E','users':[
+					{'name':'e1','tel':'15908895084'},
+					{'name':'e2','tel':'15908895085'},
+					{'name':'e3','tel':'15908895086'}
+				]},
+				{'index':'F','users':[
+					{'name':'f1','tel':'15908895087'},
+					{'name':'f2','tel':'15908895088'},
+					{'name':'f3','tel':'15908895089'}
+				]}
+				];
+			/*提取头部组件： 设置为全局组件 */
+			Vue.component('vue-header',{
+				template:'#my-header',
+				//父组件向子组件传值
+				props:{
+					'customer_title':{
+						type:String,
+						default:'标题'
+					}
+				}
+			});
+			Vue.component('vue_content_list',{
+			template:'#my-list',
+			props:{
+				'user-datas':{
+						type:Array,
+						default:function(){
+							return []
+						}
+				}
+			},
+			//通过计算属性传递参数
+			computed:{
+				//数据存储到userIndex中
+				userIndex:function(){
+					return this.filterIndex(this.userDatas);
+				}
+			},
+			methods:{
+				filterIndex:function(data){
+					var result = [];
+					for(var i=0;i< data.length;i++){
+						if(data[i].index){
+							result.push(data[i].index);
+						}
+					}
+					return result
+				},
+				setListCellIndex:function(){//调整样式布局
+					var height = this.$refs.listIndex.offsetHeight;
+					this.$refs.listIndex.style.marginTop= - height / 2 + 'px';
+				},
+				setScroll:function(event){
+					alert('测试点击事件')
+				  var iP = this.$refs.listUsers.getElementsByTagName('p');
+				  //var scroll = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+				  for(var i = 0; i < iP.length; i++){
+					  if(iP[i].innerHTML == event.target.innerHTML){
+							  document.documentElement.scrollTop = iP[i].offsetTop;
+					  }
+				  }
+				}
+			},
+			//在生命周期中实例化该方法
+			mounted() {
+				this.setListCellIndex();
+			}
+		});
+			
+			var vm = new Vue({
+				el:'#vue-app',
+				data:{//挂载数据
+					userDatas:userDatas
+				},
+				methods:{
+					/* 添加点击事件 */
+					backBtn:function(){
+						alert('测试返回按钮')
+					},
+					homeBtn:function(){
+						alert('测试主页按钮')
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

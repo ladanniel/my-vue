@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vue组件实际上是一个可扩展的vue实例</title>
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../../js/vue.min.js"></script>
+	</head>
+	<body>
+		<!-- <div id="demo">
+			<my-header></my-header>
+			<my-header></my-header>
+		</div> -->
+		<div id="demo">{{message}}</div>
+		<script>
+		/* 	var vm = new Vue({//vue的数据其他模块之间是不共享的-----原因：解耦和
+				el:'#demo',
+				data:{
+					message:`hello vue`
+				},
+				components:{
+					'my-header':{
+						template:'<h2>标题:{{message}}</h2>',
+						//不同模块之间数据调用方式,这里面同样有methods方法
+						data:function(){
+							return{
+								message:'hello myheader'
+							}
+						}
+					}
+				}
+			}) */
+			/* 	var data = {count:0};
+				var vm = new Vue({//vue的数据其他模块之间是不共享的-----原因：解耦和
+				el:'#demo',
+				data:{
+					message:`hello vue`
+				},
+				components:{
+					'my-header':{
+						template:'<h2 @click="changeCount">计算:{{count}}</h2>',
+						//不同模块之间数据调用方式,这里面同样有methods方法
+					data:function(){
+						return data;
+					},
+					methods:{
+						changeCount:function(){
+							this.count++;
+						}
+					}
+					}
+				}
+			}); */
+	//改写
+	/* var vm = new Vue({
+		el:'#demo',
+		data:{
+			message:`hello vue`
+		},
+		components:{
+			'my-header':{
+				template:'<h2 @click="changeCount">计算:{{count}}</h2>',
+			data:function(){
+				return{
+					count:0
+				}
+			},
+			methods:{
+				changeCount:function(){
+					this.count++;
+				}
+			}
+			}
+		}
+	}); */
+	//vue组件实际上是一个可扩展的vue实例
+	/* var vm = new Vue({
+		el:'#demo',
+		template:'<h1>app应用</h1>'
+	}); */
+	//继承关系 组件与实例之间的关系
+	var myComponet = Vue.extend({
+		data(){
+			return{
+				message:'hello vue'
+			}
+		}
+	});
+	var vm = new myComponet({
+		el:'#demo',
+	})
+			</script>
+		
+	</body>
+</html>

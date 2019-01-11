@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<!-- 手机app开发适应处理 -->
+		<meta name="viewport" content="width=device-width,
+		initial-scale=1.0,user-scalable=no,maximum-scale=1.0,user-scalable=0">
+		<title>vuex组件开发：手机开发通信录弹窗组件</title>
+	<!-- 	<h5>
+		1、<my-alert>
+		customerTitle  不是每个方法都要做完每件事，一个方法制作一件事，一条程序线只做一件事
+		customerBody
+		</h5> -->
+		<link rel="stylesheet" type="text/css" href="../../css/style.css"/> 
+		<script src="../../js/vue.js" ></script>
+	</head><!-- customer_fixed:传输boolean值不赋值默认为true-->
+	<body>
+		<div id="vue-app">
+			<vue-header customer_title="通讯录" >
+				<!-- 不是所有的标题栏都有两个按钮，需要进行分发处理 -->
+				<button @touchstart='backBtn' slot='left' type='button'>返回</button>
+				<button @touchstart='homeBtn' slot='right' type='button'>主页</button>
+			</vue-header>
+			<vue_content_list v-bind:user-datas='userDatas'></vue_content_list>
+			<vue-alert-scope customer_title="呼叫">
+				<div class="vue-alert-button">
+					<button v-on:touchstart="confirmBtn" type="button">确定</button>
+					<button v-on:touchstart="cancelmBtn" type="button">取消</button>
+				</div>
+			</vue-alert-scope>
+		</div>
+		<template id="my-header">
+			<div id="header"><slot name='left'></slot>{{customer_title}}<slot name='right'></slot></div>
+		</template>
+		<template id="my-list">
+				<div id="vue_content">
+				<ul class="vue_list_cell" ref="listUsers" @touchmove="bMove=true">
+					<li v-for="item in userDatas">
+						<p>{{item.index}}</p>
+						<ul>
+							<li v-on:touchend="showTel(user.tel)" v-for="user in item.users">{{user.name}}</li>
+							<!-- touchstart可能在用户滑动时候弹出，和点击冲突 touchend利用开关处理-->
+						</ul>
+					</li>
+				</ul>
+				<ul class="list_cell_index" ref="listIndex">
+					<li v-on:click='setScroll' v-for="item in userIndex">{{item}}</li>
+				</ul>
+			</div>
+		</template>
+		<template id="content-alert">
+			<div id="vue-alert" ref="dalert">
+				<div class="vue-alert-content">
+					<div class="vue-alert-title">{{customer_title}}</div>
+					<div class="vue-alert-body">{{customerBody}}</div>
+					<slot></slot>
+				</div>
+			</div>
+		</template>
+		<script>
+			//测试数据{}表示对象,['key':'value',object]
+			var userDatas = [
+				{'index':'A','users':[
+					{'name':'曹操','tel':'15908895071'},
+					{'name':'刘玄德','tel':'15908895072'},
+					{'name':'张梓琳','tel':'15908895073'}
+				]},
+				{'index':'B','users':[
+					{'name':'陈瑶','tel':'15908895074'},
+					{'name':'吾爱','tel':'15908895075'},
+					{'name':'周迅','tel':'15908895076'}
+				]},
+				{'index':'C','users':[
+					{'name':'周亚明','tel':'15908895077'},
+					{'name':'周杰伦','tel':'15908895078'},
+					{'name':'康佳乐','tel':'15908895079'}
+				]},
+				{'index':'D','users':[
+					{'name':'Jackson','tel':'15908895081'},
+					{'name':'猫儿','tel':'15908895082'},
+					{'name':'杰克','tel':'15908895083'}
+				]},
+				{'index':'E','users':[
+					{'name':'钟丽缇','tel':'15908895084'},
+					{'name':'肖亚讯','tel':'15908895085'},
+					{'name':'陈朝霞','tel':'15908895086'}
+				]},
+				{'index':'F','users':[
+					{'name':'李文华','tel':'15908895087'},
+					{'name':'赵宇','tel':'15908895088'},
+					{'name':'菲菲','tel':'15908895089'}
+				]}
+				];
+			var newview = new Vue();
+			/*提取头部组件： 设置为全局组件 */
+			Vue.component('vue-header',{
+				template:'#my-header',
+				//父组件向子组件传值
+				props:{
+					'customer_title':{
+						type:String,
+						default:'标题'
+					}
+				}
+			});
+			/* 提取弹窗组件： 设置为全局组件 */
+			Vue.component('vue-alert-scope',{
+				template:'#content-alert',
+				props:{
+					'customer_title':{
+						type:String,
+						default:'弹窗'
+					}
+				},
+				data:function(){
+					return{
+						'customerBody':''
+					}
+				},
+				mounted() {//通过计算属性传递参数
+					newview.$on('changeEvents',function(data){
+						/* alert(data) */
+						this.customerBody = data;
+						this.$refs.dalert.style.display = 'flex';
+					}.bind(this));
+				}
+			});
+			/* 提取body组件： 设置为全局组件 */
+			Vue.component('vue_content_list',{
+				template:'#my-list',
+				props:{
+					'user-datas':{
+							type:Array,
+							default:function(){
+								return []
+							}
+					}
+				},
+				//处理滑动开关
+			data:function(){
+				return{
+					bMove:false
+				}
+			},
+			//通过计算属性传递参数
+			computed:{
+				//数据存储到userIndex中
+				userIndex:function(){
+					return this.filterIndex(this.userDatas);
+				}
+			},
+			methods:{
+				filterIndex:function(data){
+					var result = [];
+					for(var i=0;i< data.length;i++){
+						if(data[i].index){
+							result.push(data[i].index);
+						}
+					}
+					return result
+				},
+				setListCellIndex:function(){//调整样式布局
+					var height = this.$refs.listIndex.offsetHeight;
+					this.$refs.listIndex.style.marginTop= - height / 2 + 'px';
+				},
+				setScroll:function(event){
+					alert('测试点击事件')
+				  var iP = this.$refs.listUsers.getElementsByTagName('p');
+				  //var scroll = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+				  for(var i = 0; i < iP.length; i++){
+					  if(iP[i].innerHTML == event.target.innerHTML){
+							  document.documentElement.scrollTop = iP[i].offsetTop;
+					  }
+				  }
+				},
+				showTel:function(data){//处理滑动与点击冲突
+					if(!this.bMove){
+						/* alert(data) */
+						//发布信息
+						newview.$emit('changeEvents',data)
+					}else{
+						this.bMove=false;
+					}
+				}
+			},
+			//在生命周期中实例化该方法
+			mounted() {
+				this.setListCellIndex();
+			}
+		});
+			
+			var vm = new Vue({
+				el:'#vue-app',
+				data:{//挂载数据
+					userDatas:userDatas
+				},
+				methods:{
+					/* 添加点击事件 */
+					backBtn:function(){
+						alert('测试返回按钮')
+					},
+					homeBtn:function(){
+						alert('测试主页按钮')
+					},
+					confirmBtn:function(){
+						alert('测试确定按钮')
+					},
+					cancelmBtn:function(){
+						// console.log(this)
+						this.$children[2].$el.style.display = 'none';
+						//这个方法并不是最好的方法
+					}
+				}
+			});
+		</script>
+	</body>
+</html>

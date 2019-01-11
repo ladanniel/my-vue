@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vue模板添加方式</title>
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="demo">
+			<my-header></my-header>
+		</div>
+	<!-- 	<template id="item">
+			<div>
+			<h2>标题:{{message}}</h2>
+			<ul>
+				<li>第一项</li>
+			</ul>
+			</div>
+		</template> -->
+		<!-- 方式三 通过js展现-->
+		<script type="text/x-template" id="item">
+			<div>
+			<h2>标题:{{message}}</h2>
+			<ul>
+				<li>第一项</li>
+			</ul>
+			</div>
+		</script>
+				
+		<script>
+			//方式一
+			/* var vm = new Vue({//vue的数据其他模块之间是不共享的-----原因：解耦和
+				el:'#demo',
+				data:{
+					message:`hello vue`
+				},
+				components:{
+					'my-header':{
+						template:
+						`<div>
+						<h2>标题:{{message}}</h2>
+						<ul>
+							<li>第一项</li>
+						</ul>
+						</div>`,
+						//不同模块之间数据调用方式,这里面同样有methods方法
+						data:function(){
+							return{
+								message:'hello myheader'
+							}
+						}
+					}
+				}
+			}); */
+			//方式二
+			var vm = new Vue({
+				el:'#demo',
+				components:{
+					'my-header':{
+						template:`#item`,
+						data:function(){
+							return{
+								message:'hello myheader'
+							};
+						}
+					}
+				}
+			});
+			//方式三通过js展现
+			</script>
+		
+	</body>
+</html>

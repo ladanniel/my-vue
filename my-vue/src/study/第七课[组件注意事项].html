@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>非父子组件通信</title>
+	<!-- 	<h1>
+			1/空实例与自定义事件
+			$emit:发布
+			$on:订阅
+			2/vuex状态管理
+			tri-statemutations
+			commit
+		</h1> -->
+		 
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="demo">
+			<my-header></my-header>
+			<my-list></my-list>
+		</div>
+		<template id="item_data">
+			<h1>{{message}}</h1>
+		</template>
+		<template id="list-data">
+			<ul>
+				<li @click="getCounted" v-for="item in list">{{item}}</li>
+			</ul>
+		</template>
+		<script>
+			var example = new Vue();
+			var vm = new Vue({
+				el:'#demo',
+				components:{
+						'my-header':{
+							template:'#item_data',
+							data:function(){
+								return{
+									message:'hello world'
+								}
+							},
+							mounted() {
+								example.$on('changeDatas',function(str){
+									// alert(str)
+									this.message = str;
+								}.bind(this))
+							}
+						},
+						'my-list':{
+							template:'#list-data',
+							data:function(){
+								return{
+									list:['第1111项','第2222项','第3333项']
+								}
+							},
+							methods:{
+								getCounted:function(ev){
+										example.$emit('changeDatas',ev.target.innerHTML)
+								}
+							}
+						}
+				}
+		
+			});
+		</script>
+		
+	</body>
+</html>

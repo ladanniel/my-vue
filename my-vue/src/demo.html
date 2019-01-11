@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="demo">
+			<!-- v-on 简写@-->
+			<!-- v-bind 简写 “：” mouted：回调函数（挂载类似ajax）-->
+			<h1>{{message}}</h1>
+			<h2>{{messageReverse}}</h2>
+			<input type="text" v-model="message" @click="changeColor"
+			:title="message"><!-- v-model绑定数据 -->
+		</div>
+		<script>
+			var vm = new Vue({
+				el:"#demo",
+				data:{
+					message:'hello vue'
+				},
+				computed:{//计算属性
+					messageReverse:function(){
+						return this.message.split('').reverse().join('');
+					}
+				},
+				methods:{
+					changeColor:function(event){
+						event.target.style.background ='red';
+					}
+				},
+				mounted:function(){
+					alert('123')
+				},
+				updated(){
+					alert('更新')
+				},
+				watch:{//监听数据变化
+					message:function(news,olds){
+						alert(news);
+						alert(olds);
+					}
+				}
+				
+			})
+			
+			
+			
+		</script>
+		
+	</body>
+</html>

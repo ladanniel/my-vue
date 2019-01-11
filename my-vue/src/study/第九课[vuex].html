@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vuex详细见vue文档状态管理</title>
+		<link rel="stylesheet" type="text/css" href=""/>
+		<script src="../../js/vue.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/vuex.js"></script>
+		<!-- 安装vuex.js命令
+		 npm install vuex --save-dev
+		 需要ajv6.0版本
+		 npm install ajv@^6.0.0
+		 -->
+	</head>
+	<body>
+		<div id="vue-x">
+			<div class="scope">{{count}}</div>
+			<my-plusbtn></my-plusbtn>
+			<my-minusbtn></my-minusbtn>
+		</div>
+		<template id="plus-data">
+			<button @click="setCount" type="button">+</button>
+		</template>
+		<template  id="minus-data">
+			<button @click="setCount" type="button">-</button>
+		</template>
+		<script>
+			var store = new Vuex.Store({
+				state:{
+					count:0
+				},
+				mutations:{//在 store 上注册 mutation，处理函数总是接受 state 作为第一个参数（如果定义在模块中，则为模块的局部状态），payload 作为第二个参数（可选）。
+					plus:function(state){
+						state.count++;
+					},
+					minus:function(state){
+						if(state.count>=1){
+							state.count--;
+						}else{
+							return false;
+						}
+					}
+				}
+			});
+			var vm = new Vue({
+				el:'#vue-x',
+				computed:{//计算属性
+					count:function(){
+						return store.state.count;
+					}
+				},
+				components:{
+					'my-plusbtn':{
+						template:'#plus-data',
+						methods:{
+							setCount:function(){
+								store.commit('plus')
+							}
+						}
+					},
+					'my-minusbtn':{
+						template:'#minus-data',
+						methods:{
+							setCount:function(){
+								store.commit('minus')
+							}
+						}
+					}
+				}
+			})
+		</script>
+		<style type="text/css">
+			#vue-x{
+				width: 100%;
+				height: 600px;
+				background: #42B983;
+			}
+			#vue-x button{
+				height: 50px;
+				width: 150px;
+				background: #FF0000;
+				text-align: center;
+				margin: 5px;
+			}
+			#vue-x .scope{
+				height: 50px;
+				width: 300px;
+				text-align: center;
+				border: 1px solid red;
+				margin: 10px;
+				line-height: 45px;
+				font-size: 20px;
+			}
+		</style>
+	</body>
+</html>

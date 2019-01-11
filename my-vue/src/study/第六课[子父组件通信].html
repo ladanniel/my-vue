@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vue子父嵌套组件通信 接口为：emitEvents</title>
+		<!-- vue与其他js不同必须把引用的js-script放在header里面 -->
+		<script src="../../js/vue.min.js"></script>
+	</head>
+	<body>
+		<div id="demo">
+			<!-- <my-header> 走默认值-->
+			<my-header :list="list" >
+				<my-navation @changeEvents="getChildContent" :list="list"></my-navation>
+			</my-header>
+		</div>
+		<template id="item">
+				<div>
+					<h2>{{message}}子组件</h2>
+					<ul>
+						<li v-on:click="getDatas()" v-for="item in list">{{item}}</li>
+					</ul>
+					<template id="items">
+						<h2>子子组件</h2>
+						<ul>
+							<li v-on:click="getcounts()" v-for="items in list">{{items}}</li>
+						</ul>
+					</template>
+					</div>
+			</template>
+			
+		<script>
+			var vm = new Vue({
+				el:'#demo',
+				data:{
+					list:['第一组','第二组','第三组'],
+					message:'hello app'
+				},
+				components:{
+					'my-header':{
+						template:'#item',
+						/* data:function(){
+							return{
+								message:'hello world'
+							}走默认message 否则不屏蔽不走默认
+						}, */
+						props:{
+							'list':{
+								type:Array,
+								default:function(){
+									return ['第11组','第12组','第13组']
+								}
+							},
+							'message':{
+								type:String,
+								default:'hello world'
+							}
+							
+						},
+						methods:{
+							getDatas:function(str){
+								this.message = str
+							},
+							getcounts:function(){
+								alert('====')
+							}
+						},
+						components:{
+							'my-navation':{
+								template:'#items',
+								props:['list']
+							}
+							
+						}
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

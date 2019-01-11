@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>vuex动态组件</title>
+		<h5>多个组件可以切换的组件方式
+		1、component
+		2、is
+		3、keep-alive保存之前的操作
+		</h5>
+		<link rel="stylesheet" type="text/css" href=""/>
+		<script src="../../js/vue.js"></script>
+		<!-- 安装vuex.js命令
+		 npm install vuex --save-dev
+		 需要ajv6.0版本
+		 npm install ajv@^6.0.0
+		 -->
+	</head>
+	<body>
+		<div id="vue-x">
+		
+				<button @click="change(1)" type="button">第一组</button>
+				<button @click="change(2)" type="button">第二组</button>
+				<button @click="change(3)" type="button">第三组</button>
+				<keep-alive>
+					<componet v-bind:is="home"></componet>
+				</keep-alive>
+				
+		</div>
+		<template id="title-data1"><div>组件1<input type="text"></div></template>
+		<template id="title-data2"><div>组-件2<input type="text"></div></template>
+		<template id="title-data3"><div>组*件3<input type="text"></div></template>
+		<script>
+			var vm = new Vue({
+				el:'#vue-x',
+				data:{
+					home:'my-header1'
+				},
+				components:{
+					'my-header1':{
+						template:'#title-data1'
+					},
+					'my-header2':{
+						template:'#title-data2'
+					},
+					'my-header3':{
+						template:'#title-data3'
+					}
+				},
+				methods:{
+					change:function(index){
+						this.home = 'my-header'+index
+					}
+				}
+			})
+		</script>
+		<style type="text/css">
+			#vue-x{
+				width: 100%;
+				height: 600px;
+				background: #42B983;
+			}
+			#vue-x button{
+				height: 50px;
+				width: 150px;
+				background: #FF0000;
+				text-align: center;
+				margin: 5px;
+			}
+			#vue-x .scope{
+				height: 50px;
+				width: 300px;
+				text-align: center;
+				border: 1px solid red;
+				margin: 10px;
+				line-height: 45px;
+				font-size: 20px;
+			}
+			#title-data > h2{
+				margin: -3px;
+			}
+		</style>
+	</body>
+</html>
